@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小規模事業者持続化補助金：公募スケジュール予測とロードマップ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #F9FAFB; /* Cool gray background */
+            color: #1F2937;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        .timeline-line {
+            position: absolute;
+            left: 24px;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: #E5E7EB;
+            z-index: 0;
+        }
+        .step-active .timeline-dot {
+            background-color: #2563EB; /* Blue-600 */
+            border-color: #DBEAFE; /* Blue-100 */
+        }
+        .step-item {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .step-item:hover {
+            background-color: #F3F4F6;
+        }
+        .step-item.selected {
+            background-color: #EFF6FF; /* Blue-50 */
+            border-right: 4px solid #2563EB;
+        }
+        .fade-in {
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+    <!-- Chosen Palette: Trust & Clarity (Base: Cool Gray #F9FAFB, Primary: Royal Blue #2563EB, Accent: Alert Red #EF4444, Success: Emerald #10B981) -->
+    <!-- Application Structure Plan: 
+         1. Executive Summary (Forecast Dashboard): Immediate answer to "When?". clearly distinguishing between "Assumption" and "Fact".
+         2. Interactive Roadmap (The Core): A vertical timeline where clicking phases reveals detailed tasks (Business Plan, G-Biz ID, etc.).
+         3. Time Allocation Chart: A bar chart showing that "Preparation" and "Post-Adoption" take longer than the application itself.
+         4. Readiness Checklist: Interactive toggle list to assess if the client is ready for the *next* opening immediately.
+         Structure designed to shift client focus from "Waiting for date" to "Preparing now". -->
+    <!-- Visualization & Content Choices: 
+         - Forecast Card: Big typography for dates to provide clarity (Goal: Inform).
+         - Timeline Interaction: Vertical list with detail pane to manage information density (Goal: Change/Guide).
+         - Duration Chart: Stacked Bar Chart (Chart.js) to visualize the ~10-12 month total lifecycle (Goal: Inform/Manage Expectations).
+         - Checklist: Simple JS toggle to gamify preparation (Goal: Engage).
+         - NO SVG/Mermaid: Icons are Unicode. Charts are Canvas. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-200">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <span class="text-2xl">📅</span>
+                <h1 class="text-xl font-bold text-gray-800">小規模事業者持続化補助金 <span class="text-blue-600">公募予測 & 準備ガイド</span></h1>
+            </div>
+            <div class="text-sm text-gray-500 hidden sm:block">最終更新: 2026年1月</div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-6xl mx-auto px-4 py-8 w-full space-y-8">
+
+        <!-- SECTION 1: FORECAST DASHBOARD -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="md:col-span-3">
+                <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-600">
+                    <h2 class="text-xl font-bold mb-2">次回公募スケジュールの見通し</h2>
+                    <p class="text-gray-600">
+                        持続化補助金は通年で公募されていますが、締切（回）ごとに審査が行われます。
+                        現在、正式な公募要領の発表待ち、または直近の締切に向けた準備期間と考えられます。
+                        過去の傾向から、次回のスケジュールを予測します。
+                    </p>
+                </div>
+            </div>
+
+            <!-- Prediction Cards -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center text-center">
+                <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wide">次回 (第18回想定) 公募開始予測</h3>
+                <div class="mt-4 text-3xl font-bold text-gray-800">2026年 <span class="text-blue-600">2月〜3月</span>頃</div>
+                <div class="mt-2 text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">公募要領 発表時期</div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center text-center">
+                <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wide">次回 申請締切 予測</h3>
+                <div class="mt-4 text-3xl font-bold text-gray-800">2026年 <span class="text-red-600">5月〜6月</span>頃</div>
+                <div class="mt-2 text-xs bg-red-50 text-red-600 px-2 py-1 rounded">事業計画書の提出期限</div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wide mb-2">現在のステータス</h3>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <span class="relative flex h-3 w-3">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                        </span>
+                        <span class="font-bold text-green-700">準備期間 (公募前/公募中)</span>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-500">
+                    ※上記は過去の四半期ごとの実施サイクルに基づく予測です。正確な日程は事務局公式サイトの発表をお待ちください。
+                </p>
+            </div>
+        </section>
+
+        <!-- SECTION 2: INTERACTIVE ROADMAP -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-12">
+                <div class="mb-4">
+                    <h2 class="text-2xl font-bold text-gray-800">申請〜受給までのロードマップ</h2>
+                    <p class="text-gray-600 mt-2">
+                        補助金は「申請して終わり」ではありません。採択後の「交付申請」「事業実施」「実績報告」を経て初めて入金されます。
+                        左側のフェーズをクリックすると、詳細なアクションと注意点が表示されます。
+                    </p>
+                </div>
+            </div>
+
+            <!-- Left: Timeline Navigation -->
+            <div class="lg:col-span-4 relative">
+                <div class="timeline-line"></div>
+                <div class="space-y-4 relative z-10" id="timeline-nav">
+                    <!-- Items injected by JS -->
+                </div>
+            </div>
+
+            <!-- Right: Detail View -->
+            <div class="lg:col-span-8">
+                <div id="timeline-detail" class="bg-white p-8 rounded-xl shadow-lg border border-gray-100 h-full">
+                    <!-- Details injected by JS -->
+                    <div class="flex flex-col items-center justify-center h-64 text-gray-400">
+                        <span class="text-4xl mb-4">👈</span>
+                        <p>左側のタイムラインをクリックして詳細を確認してください</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: TIME ALLOCATION CHART -->
+        <section class="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
+            <div class="flex flex-col md:flex-row justify-between items-start mb-6">
+                <div class="mb-4 md:mb-0">
+                    <h2 class="text-xl font-bold text-gray-800">所要期間の全体像</h2>
+                    <p class="text-sm text-gray-600 mt-1">
+                        申請から入金までは約1年かかります。資金繰り（つなぎ融資など）の計画に役立ててください。
+                    </p>
+                </div>
+                <div class="bg-blue-50 text-blue-800 px-4 py-2 rounded-lg text-sm font-bold">
+                    総所要期間：約 10〜14ヶ月
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="durationChart"></canvas>
+            </div>
+        </section>
+
+        <!-- SECTION 4: READINESS CHECKLIST -->
+        <section class="bg-slate-800 rounded-2xl p-8 text-white">
+            <div class="flex flex-col md:flex-row gap-8">
+                <div class="md:w-1/3">
+                    <h2 class="text-2xl font-bold mb-4">今すぐ始める準備リスト</h2>
+                    <p class="text-slate-300 mb-6">
+                        公募開始の発表を待っている間にできることがあります。特に「GビズID」の発行は2週間以上かかる場合があるため、最優先事項です。
+                    </p>
+                    <div id="progress-display" class="text-center bg-slate-700 rounded-lg p-4">
+                        <div class="text-sm text-slate-400">準備完了率</div>
+                        <div class="text-4xl font-bold text-blue-400 mt-1"><span id="progress-val">0</span>%</div>
+                    </div>
+                </div>
+                <div class="md:w-2/3 grid grid-cols-1 gap-3">
+                    <label class="flex items-center bg-slate-700 p-4 rounded-lg cursor-pointer hover:bg-slate-600 transition">
+                        <input type="checkbox" class="checklist-item w-5 h-5 text-blue-500 rounded focus:ring-blue-500 border-gray-500" onchange="updateProgress()">
+                        <span class="ml-3 font-medium">GビズIDプライムアカウントの取得（必須）</span>
+                    </label>
+                    <label class="flex items-center bg-slate-700 p-4 rounded-lg cursor-pointer hover:bg-slate-600 transition">
+                        <input type="checkbox" class="checklist-item w-5 h-5 text-blue-500 rounded focus:ring-blue-500 border-gray-500" onchange="updateProgress()">
+                        <span class="ml-3 font-medium">「経営計画書」と「補助事業計画書」の素案作成</span>
+                    </label>
+                    <label class="flex items-center bg-slate-700 p-4 rounded-lg cursor-pointer hover:bg-slate-600 transition">
+                        <input type="checkbox" class="checklist-item w-5 h-5 text-blue-500 rounded focus:ring-blue-500 border-gray-500" onchange="updateProgress()">
+                        <span class="ml-3 font-medium">最寄りの商工会議所・商工会への事前相談</span>
+                    </label>
+                    <label class="flex items-center bg-slate-700 p-4 rounded-lg cursor-pointer hover:bg-slate-600 transition">
+                        <input type="checkbox" class="checklist-item w-5 h-5 text-blue-500 rounded focus:ring-blue-500 border-gray-500" onchange="updateProgress()">
+                        <span class="ml-3 font-medium">見積書の取得（車両改装・機械装置など）</span>
+                    </label>
+                    <label class="flex items-center bg-slate-700 p-4 rounded-lg cursor-pointer hover:bg-slate-600 transition">
+                        <input type="checkbox" class="checklist-item w-5 h-5 text-blue-500 rounded focus:ring-blue-500 border-gray-500" onchange="updateProgress()">
+                        <span class="ml-3 font-medium">直近の確定申告書・決算書の準備</span>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-100 mt-12 py-8 border-t border-gray-200">
+        <div class="max-w-6xl mx-auto px-4 text-center text-gray-500 text-sm">
+            <p class="mb-2">当ツールは一般的なスケジュール予測に基づくシミュレーションです。</p>
+            <p>必ず「全国商工会連合会」または「日本商工会議所」の公式公募要領をご確認ください。</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- DATA: Timeline ---
+        const timelineData = [
+            {
+                id: 1,
+                phase: "公募開始前",
+                title: "事前準備・ID取得",
+                duration: "2週間〜1ヶ月",
+                icon: "🔑",
+                color: "bg-gray-100",
+                details: "【最優先】電子申請に必要な「GビズIDプライム」アカウントを取得します。発行まで2週間程度かかるため、公募開始前に済ませるのが鉄則です。また、どのような事業を行うか（キッチンカーのコンセプト、メニュー、出店場所）を固め、商工会・商工会議所に相談に行きます。"
+            },
+            {
+                id: 2,
+                phase: "公募期間中",
+                title: "計画書作成・申請",
+                duration: "約2〜3ヶ月",
+                icon: "✍️",
+                color: "bg-blue-100",
+                details: "「経営計画書」と「補助事業計画書」を作成します。<br>1. 自社の現状分析<br>2. 販路開拓の具体的な取り組み<br>3. その効果<br>を論理的に記述する必要があります。作成後、商工会・商工会議所から「事業支援計画書」を発行してもらい、締切までに電子申請を行います。"
+            },
+            {
+                id: 3,
+                phase: "審査期間",
+                title: "審査・採択発表",
+                duration: "約2〜3ヶ月",
+                icon: "⚖️",
+                color: "bg-yellow-100",
+                details: "事務局による審査が行われます。採択・不採択の結果がWebサイトで公表されます。採択された場合、「交付決定通知書」が届くまで、まだ発注・契約はできません（※事前着手届出がある場合を除く）。"
+            },
+            {
+                id: 4,
+                phase: "事業実施期間",
+                title: "発注・納品・支払",
+                duration: "約6〜10ヶ月",
+                icon: "🚚",
+                color: "bg-green-100",
+                details: "交付決定後、正式にキッチンカーの改装や広報費の発注を行います。<br><strong>重要：</strong>期間内に全ての「納品」と「支払い（銀行振込）」を完了させる必要があります。証拠書類（見積書、発注書、納品書、請求書、振込控）を全て保存します。"
+            },
+            {
+                id: 5,
+                phase: "事業終了後",
+                title: "実績報告・入金",
+                duration: "1〜2ヶ月後",
+                icon: "💰",
+                color: "bg-indigo-100",
+                details: "事業完了報告書と証拠書類を事務局に提出します。不備がなければ「確定通知書」が届き、その後「精算払請求書」を提出すると、指定口座に補助金が入金されます。一時的に全額立て替えが必要な点に注意してください。"
+            }
+        ];
+
+        // --- INIT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTimelineNav();
+            renderChart();
+            // Select first item by default
+            selectStep(0);
+        });
+
+        // --- RENDER: Timeline Nav ---
+        function renderTimelineNav() {
+            const container = document.getElementById('timeline-nav');
+            container.innerHTML = '';
+
+            timelineData.forEach((item, index) => {
+                const el = document.createElement('div');
+                el.className = `step-item flex items-center p-3 rounded-lg ml-8 relative border border-transparent hover:border-gray-200`;
+                el.dataset.index = index;
+                el.onclick = () => selectStep(index);
+                
+                el.innerHTML = `
+                    <div class="absolute -left-10 top-1/2 transform -translate-y-1/2 w-4 h-4 rounded-full bg-white border-4 border-gray-300 timeline-dot transition-colors"></div>
+                    <div class="mr-4 text-2xl">${item.icon}</div>
+                    <div>
+                        <div class="text-xs font-bold text-gray-500 uppercase">${item.phase}</div>
+                        <div class="font-bold text-gray-800">${item.title}</div>
+                    </div>
+                `;
+                container.appendChild(el);
+            });
+        }
+
+        // --- ACTION: Select Step ---
+        function selectStep(index) {
+            // Update Nav Styles
+            const items = document.querySelectorAll('.step-item');
+            items.forEach((item, i) => {
+                const dot = item.querySelector('.timeline-dot');
+                if (i === index) {
+                    item.classList.add('selected');
+                    dot.classList.remove('border-gray-300');
+                    dot.classList.add('border-blue-200', 'bg-blue-600');
+                } else {
+                    item.classList.remove('selected');
+                    dot.classList.add('border-gray-300');
+                    dot.classList.remove('border-blue-200', 'bg-blue-600');
+                }
+            });
+
+            // Update Detail View
+            const data = timelineData[index];
+            const detailContainer = document.getElementById('timeline-detail');
+            
+            detailContainer.innerHTML = `
+                <div class="fade-in h-full flex flex-col">
+                    <div class="flex items-center mb-6">
+                        <div class="text-4xl bg-white p-3 rounded-full shadow-sm mr-4">${data.icon}</div>
+                        <div>
+                            <span class="px-2 py-1 text-xs font-bold rounded bg-gray-800 text-white mb-1 inline-block">${data.phase}</span>
+                            <h3 class="text-2xl font-bold text-gray-800">${data.title}</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="flex-grow">
+                        <p class="text-lg text-gray-700 leading-relaxed mb-6 border-l-4 border-blue-500 pl-4">
+                            ${data.details}
+                        </p>
+                        
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                            <h4 class="font-bold text-gray-600 text-sm mb-2">⏱️ このフェーズの標準期間</h4>
+                            <div class="flex items-center">
+                                <div class="h-2 flex-grow bg-gray-200 rounded-full overflow-hidden">
+                                    <div class="h-full bg-blue-500" style="width: 100%"></div>
+                                </div>
+                                <span class="ml-3 font-bold text-blue-600">${data.duration}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- CHECKLIST Logic ---
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.checklist-item');
+            const total = checkboxes.length;
+            const checked = Array.from(checkboxes).filter(c => c.checked).length;
+            const percent = Math.round((checked / total) * 100);
+            
+            const display = document.getElementById('progress-val');
+            
+            // Simple animation
+            let current = parseInt(display.innerText);
+            const animate = setInterval(() => {
+                if (current < percent) current++;
+                else if (current > percent) current--;
+                else clearInterval(animate);
+                display.innerText = current;
+            }, 10);
+        }
+
+        // --- CHART: Duration ---
+        function renderChart() {
+            const ctx = document.getElementById('durationChart').getContext('2d');
+            
+            // Data representing months
+            const data = {
+                labels: ['標準的なスケジュール感'],
+                datasets: [
+                    {
+                        label: '準備・申請',
+                        data: [3], // 3 months
+                        backgroundColor: 'rgba(209, 213, 219, 0.8)', // Gray
+                    },
+                    {
+                        label: '審査待ち',
+                        data: [3], // 3 months
+                        backgroundColor: 'rgba(252, 211, 77, 0.8)', // Yellow
+                    },
+                    {
+                        label: '事業実施（改装・販促）',
+                        data: [7], // 7 months
+                        backgroundColor: 'rgba(59, 130, 246, 0.8)', // Blue
+                    },
+                    {
+                        label: '報告・入金待ち',
+                        data: [2], // 2 months
+                        backgroundColor: 'rgba(16, 185, 129, 0.8)', // Green
+                    }
+                ]
+            };
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: data,
+                options: {
+                    indexAxis: 'y', // Horizontal bar
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            stacked: true,
+                            title: {
+                                display: true,
+                                text: '月数 (Month)'
+                            },
+                            max: 16
+                        },
+                        y: {
+                            stacked: true,
+                            display: false
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    family: "'Noto Sans JP', sans-serif"
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': 約' + context.raw + 'ヶ月';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
